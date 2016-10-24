@@ -1,0 +1,108 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{ba2014deep}
+Ba, J., Caruana, R.: Do deep nets really need to be deep? In: Advances in
+  neural information processing systems. pp. 2654--2662 (2014)
+
+\bibitem{cawley2006leave}
+Cawley, G.C.: Leave-one-out cross-validation based model selection criteria for
+  weighted ls-svms. In: Neural Networks, 2006. IJCNN'06. International Joint
+  Conference on. pp. 1661--1668. IEEE (2006)
+
+\bibitem{daume2010frustratingly}
+Daum{\'e}~III, H., Kumar, A., Saha, A.: Frustratingly easy semi-supervised
+  domain adaptation. In: Proceedings of the 2010 Workshop on Domain Adaptation
+  for Natural Language Processing. pp. 53--59. Association for Computational
+  Linguistics (2010)
+
+\bibitem{Donahue_2013_CVPR}
+Donahue, J., Hoffman, J., Rodner, E., Saenko, K., Darrell, T.: Semi-supervised
+  domain adaptation with instance constraints. In: The IEEE Conference on
+  Computer Vision and Pattern Recognition (CVPR) (2013)
+
+\bibitem{duan2012learning}
+Duan, L., Xu, D., Tsang, I.W.: Learning with augmented features for
+  heterogeneous domain adaptation. In: Proceedings of the International
+  Conference on Machine Learning. pp. 711--718. Omnipress, Edinburgh, Scotland
+  (2012)
+
+\bibitem{duan2012visual}
+Duan, L., Xu, D., Tsang, I.W.H., Luo, J.: Visual event recognition in videos by
+  learning from web data. vol.~34, pp. 1667--1680. IEEE (2012)
+
+\bibitem{fan2008liblinear}
+Fan, R.E., Chang, K.W., Hsieh, C.J., Wang, X.R., Lin, C.J.: Liblinear: A
+  library for large linear classification. Journal of machine learning research
+   9(Aug),  1871--1874 (2008)
+
+\bibitem{hinton2015distilling}
+Hinton, G., Vinyals, O., Dean, J.: Distilling the knowledge in a neural
+  network. NIPS Deep Learning and Representation Learning Workshop  (2014)
+
+\bibitem{karl2001long}
+Karl, D., Bidigare, R., Letelier, R.: Long-term changes in plankton community
+  structure and productivity in the north pacific subtropical gyre: The domain
+  shift hypothesis. Deep Sea Research Part II: Topical Studies in Oceanography
+  48(8),  1449--1470 (2001)
+
+\bibitem{KrizhevskyNIPS12}
+Krizhevsky, A., Sutskever, I., Hinton, G.E.: Imagenet classification with deep
+  convolutional neural networks. In: Advances in neural information processing
+  systems. pp. 1106--1114 (2012)
+
+\bibitem{lopez2015unifying}
+Lopez-Paz, D., Sch{\"o}lkopf, B., Bottou, L., Vapnik, V.: Unifying distillation
+  and privileged information. In: International Conference on Learning
+  Representations (2016)
+
+\bibitem{luo2016face}
+Luo, P., Zhu, Z., Liu, Z., Wang, X., Tang, X.: Face model compression by
+  distilling knowledge from neurons. In: Thirtieth AAAI Conference on
+  Artificial Intelligence (2016)
+
+\bibitem{pan2010survey}
+Pan, S.J., Yang, Q.: A survey on transfer learning. IEEE Transactions on
+  Knowledge and Data Engineering  22(10),  1345--1359 (2010)
+
+\bibitem{romero2014fitnets}
+Romero, A., Ballas, N., Kahou, S.E., Chassang, A., Gatta, C., Bengio, Y.:
+  Fitnets: Hints for thin deep nets. In: In Proceedings of International
+  Conference on Learning Representations (2015)
+
+\bibitem{suykens1999least}
+Suykens, J.A., Vandewalle, J.: Least squares support vector machine
+  classifiers. Neural processing letters  9(3),  293--300 (1999)
+
+\bibitem{tommasi2014learning}
+Tommasi, T., Orabona, F., Caputo, B.: Learning categories from few examples
+  with multi model knowledge transfer. Pattern Analysis and Machine
+  Intelligence, IEEE Transactions on  36(5),  928--941 (2014)
+
+\bibitem{Tzeng_2015_ICCV}
+Tzeng, E., Hoffman, J., Darrell, T., Saenko, K.: Simultaneous deep transfer
+  across domains and tasks. In: The IEEE International Conference on Computer
+  Vision (ICCV) (2015)
+
+\bibitem{urban2016deep}
+Urban, G., Geras, K.J., Kahou, S.E., Aslan, O., Wang, S., Caruana, R., rahman
+  Mohamed, A., Philipose, M., Richardson, M.: Do deep convolutional nets really
+  need to be deep (or even convolutional)? In: International Conference on
+  Learning Representations (workshop track) (2016)
+
+\bibitem{vapnik2015learning}
+Vapnik, V., Izmailov, R.: Learning using privileged information: Similarity
+  control and knowledge transfer. Journal of Machine Learning Research  16,
+  2023--2049 (2015)
+
+\bibitem{vapnik1999overview}
+Vapnik, V.N.: An overview of statistical learning theory. IEEE Transactions on
+  Neural Networks  10(5),  988--999 (1999)
+
+\bibitem{yao2015semi}
+Yao, T., Pan, Y., Ngo, C.W., Li, H., Mei, T.: Semi-supervised domain adaptation
+  with subspace learning for visual recognition. In: The IEEE Conference on
+  Computer Vision and Pattern Recognition (CVPR). pp. 2142--2150 (2015)
+
+\end{thebibliography}

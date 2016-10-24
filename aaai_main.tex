@@ -1,0 +1,84 @@
+%File: formatting-instruction.tex
+\documentclass[letterpaper]{article}
+\usepackage{latexsym}
+\usepackage{url}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{geometry}
+\usepackage{subfig}
+\geometry{left=2.0cm,right=2.0cm, top=2.0cm, bottom=2.0cm}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+\usepackage{url}
+\usepackage{leftidx}
+\usepackage{graphicx,grffile}
+\usepackage{epstopdf}
+\usepackage{multirow,bigstrut}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{subfig}
+\usepackage{soul,color}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\newcommand{\algorithmicbreak}{\textbf{break}}
+%\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{aaai}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\frenchspacing
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\pdfinfo{
+/Title (Insert Your Title Here)
+/Author (Put All Your Authors Here, Separated by Commas)}
+\setcounter{secnumdepth}{0}
+ \begin{document}
+% The file aaai.sty is the style file for AAAI Press
+% proceedings, working notes, and technical reports.
+%
+\title{Fast Generalized Distillation for Semi-supervised Domain Adaptation}
+%\author{AAAI Press\\
+%Association for the Advancement of Artificial Intelligence\\
+%2275 East Bayshore Road, Suite 160\\
+%Palo Alto, California 94303\\
+%}
+\maketitle
+\begin{abstract}
+\begin{quote}
+
+Semi-supervised domain adaptation (SDA) is a typical setting when we face the problem of domain adaptation in the real applications. In this paper, we propose a new paradigm, called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA), that uses the recently proposed framework \textit{Generalized Distillation} \cite{lopez2015unifying} to solve the SDA problem.
+We first demonstrate the reason why GDSDA can work for SDA problem and show that the imitation parameter can greatly affect the performance of the target model. Then to make GDSDA more practical for real applications, we propose a novel parameter estimation method, called GDSDA-SVM which uses SVM as the base classifier for GDSDA and can effectively estimate the imitation parameter. Specifically, we use mean square loss in GDSDA-SVM and show that we can effectively estimate the imitation parameter by minimizing the Leave-one-out loss of the target model on the training data. Experiment results show that our method can effectively transfer the knowledge between different domains and estimate the imitation parameter for SDA problem.
+\end{quote}
+\end{abstract}
+
+\section{Introduction}
+\input{intro2}
+
+%\input{intro.tex}
+
+%\section{Background}
+%\input{bg}
+
+\section{Related Work}\label{sec:work}
+\input{work2}
+
+\section{Generalized Distillation for Semi-supervised Domain Adaptation}\label{sec:gdda}
+\input{gd}
+\input{GDDA}
+
+\section{GDSDA-SVM}\label{sec:svm}
+\input{multi-distill.tex}
+
+\section{Experiments}\label{sec:exp}
+\input{exp}
+
+\section{Conclusion}\label{sec:con}
+%In this paper, we propose a framework called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA) that can effectively leverage the knowledge from the source domain for SDA problem. We illustrate the effectiveness of GDSDA. In particular, we demonstrate that the knowledge can be effectively transferred between different domains by distilling the knowledge of the source model using the unlabeled examples. Moreover, we have shown that the performance of the target model can be further improved with the help of just one labeled example from each class. We also address the importance of the imitation parameter in GDSDA. To make GDSDA more effective in real applications, we proposed a method called GDSDA-SVM which uses SVM as the base learner. Experiment results show that GDSDA-SVM can effectively determine the imitation parameter to control the importance of the source knowledge and achieve improved performance. 
+In this paper, we propose a framework called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA) that can effectively leverage the knowledge from the source domain for SDA problem. To make GDSDA more effective in real applications, we proposed a method called GDSDA-SVM and show that GDSDA-SVM can effectively determine the imitation parameter for GDSDA.
+\bibliographystyle{aaai}
+\bibliography{research}
+\end{document}

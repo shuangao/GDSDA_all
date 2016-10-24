@@ -1,0 +1,138 @@
+%As we mentioned above, to achieve the best performance of the target model, the imitation parameter should be set to minimize the training error. 
+As we mentioned, it is important to find a method that can determine the imitation parameter effectively. In this section, we propose our method GDSDA-SVM that uses SVM as the base classifier and can effectively estimate the imitation parameter by minimizing the training error on the target domain.
+\subsection{Distillation with multiple sources}
+%As we discussed above, we should find a method that can estimate the optimal imitation parameter effectively for real applications. 
+%To solve this problem, we propose a novel method that uses SVM as the base classifier and can determine the imitation parameter $\lambda$ autonomously, called GDSDA-SVM. 
+As it is suggested in \cite{vapnik2015learning}, the optimal imitation parameter should be the one that can minimize the training error on the target domain. Based on that, we propose our method GDSDA-SVM that can estimate the imitation parameter effectively.
+
+In our GDSDA-SVM, instead of using hinge loss, we use Mean Squared Error (MSE) as our loss function for the following two reasons: (1) Several recently works \cite{ba2014deep,luo2016face,romero2014fitnets,urban2016deep} show that MSE is also an efficient measurement for the target model to mimick the behavior of the source model. (2) MSE can provide a closed form cross-validation error estimation. Thus we can effectively estimate the imitation parameter. 
+
+Suppose we have $L$ examples $\{\textbf{x}_j,\textbf{y}_j\}_{j=1}^L$ from and $N$ classes in the target domain where $X\in R^{L\times d}, Y\in R^{L\times N}$. Meanwhile, there are $M-1$ the source (teacher) models providing the soft labels $Y^*=\{\textbf{y}^*_{ij}|j=1,...,L;i=1,...,M-1\}$ for each of the $L$ examples.
+For simplicity, we combine the hard label $Y$ and soft label $Y^*$ and use new label matrix: $S \in R^{M\times L \times N}$ to denote them. To solve this $N$-class classification problem, we adopt the One-vs-All strategy to build $N$ binary SVMs.
+To obtain the $n$th binary SVM, we have to solve the following optimization problem: 
+\begin{equation}\label{eq:multi-distill}
+\begin{aligned}
+\min \qquad & \frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{i,j} \lambda_i{e_{ijn}^2} \quad
+s.t. & e_{ijn} = s_{ijn} - \textbf{w}_n\textbf{x}_j;\sum_i\lambda_i=1;\\
+%& \sum_i\lambda_i=1; \lambda_i \in [0,1]; i\in M;  j\in L\\
+\end{aligned}  
+\end{equation}
+%To solve this optimization problem, we use KKT theorem \cite{cristianini2000introduction} and add the dual sets of variables to the Lagrangian of the optimization problem:
+%\begin{equation}
+%\begin{aligned}
+%\mathcal{L}=&\frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{i,j} \lambda_i{e_{ijn}^2}+\sum_{i,j}\alpha^{(n)}_{ij}\left(s_{ij} - \textbf{w}_n\textbf{x}_j-e_{ij}\right)+\beta^{(n)}\left(\sum_i\lambda_i-1\right)
+%\end{aligned}
+%\end{equation}
+To find the saddle point, 
+\begin{equation}
+\begin{aligned}
+\frac{{\partial L}}{{\partial \textbf{w}_n}}& =0 \rightarrow \textbf{w}_n = \sum_{j}\alpha^{(n)}_{ij} {\textbf{x}_j}; &
+\frac{{\partial L}}{{\partial {e_{ijn}}}} & =0 \rightarrow \alpha^{(n)}_{ij} = 2C\lambda_i {e_{ijn}}\\
+\end{aligned}
+\end{equation}
+For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{ijn}  + \textbf{w}_n\textbf{x}_j= s_{ijn}$. Replacing $\textbf{w}_n$ and $e_{ijn}$,  we have:  
+\begin{equation}
+\begin{aligned}
+%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\frac{\alpha^{(n)}_{ij}}{2C\lambda_i}&=s_{ijn}\\
+\lambda_i\textbf{x}_j\sum_{k}\alpha^{(n)}_{ik}\textbf{x}_k+\frac{\alpha^{(n)}_{ij}}{2C}&=\lambda_is_{ijn}
+%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\sum_j\frac{\alpha^{(n)}_{ij}}{2C}&=\sum_j\lambda_js_{ijn}
+\end{aligned}
+\end{equation}
+Summing over each constraint of example $x_j$, we have:
+\begin{equation}
+\underbrace{\sum_i\lambda_i}_{=1} \textbf{x}_j\sum_{k}\alpha^{(n)}_{ik}\textbf{x}_k+\sum_i\frac{\alpha^{(n)}_{ij}}{2C}=\sum_i\lambda_is_{ijn}
+\end{equation}
+%Here we use $K$ to denote the kernel matrix $K=\{x_ix_j|i,j\in 1\dots L\}$.
+Let %$M=[K+\frac{\mathbf{I}}{2C}]$ and 
+$\eta_{jn}=\sum_i\alpha^{(n)}_{ij}$, we have:
+\begin{equation}
+\begin{aligned}
+\sum_j\eta_{jn}\textbf{x}_jx_i+\frac{\eta_{in}}{2C}&=\sum_i\lambda_is_{ijn}\\
+%M\eta_n&=S_n\begin{bmatrix}
+%\lambda_1\\\vdots\\\lambda_m
+%\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+This implies that solving the optimization problem \eqref{eq:multi-distill} is equivalent to solve a standard LS-SVM \cite{suykens1999least} whose the target is the weighted sum of each label $\sum_i\lambda_is_{ijn}$.
+
+Here we use $\Omega$ to denote the matrix $\Omega=[K+\frac{\mathbf{I}}{2C}]$ where $K$ is the kernel matrix $K=\{\textbf{x}_i\textbf{x}_j|i,j\in 1\dots L\}$. To simplify our notation, let ${\eta}'_{n}=M^{-1}S_n$ where $S_n$ is the matrix $S_n=\{s_{ijn}|i\in M;j\in L\}$ and $\Omega^{-1}$ is the inverse of matrix $\Omega$. 
+
+Let $\eta_{jn}=\sum_i\lambda_i{\eta}'_{ijn}$.
+According to  \cite{cawley2006leave}, the Leave-one-out estimation of the example $\textbf{x}_j$ for the $n$th binary SVM can be written as:
+%\[\sum_i\lambda_is_{ijn}-\hat{y}_{jn} =\frac{{\eta}_{jn}}{\Omega_{jj}^{-1}} =\frac{\sum_i\lambda_i{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\]
+\begin{equation}\label{eq:yhat}
+\hat{y}_{jn} = \sum_i\lambda_i\left(s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\right)
+\end{equation}
+where $\Omega^{-1}_{jj}$ is the $j$th diagonal element of $\Omega^{-1}$.
+% Now for any given $\lambda$, we have found an efficient way to estimate the LOO of each binary target model for example $\textbf{x}_j$. 
+%In the following part, we will introduce how to find the optimal $\lambda_i$ for each of the source models. 
+\subsection{Cross-entropy loss for imitation parameter estimation}
+From the previous part, we have already found a effective way to estimate the output of the SVM. The optimal imitation parameters, can be found by solving the following optimization problem:
+\begin{equation}\label{eq:loo_loss}
+\begin{aligned}
+\min \quad& L_c\left(\lambda\right)=\frac{1}{2}\sum_i^M||\lambda_i||^2+\frac{1}{L}\sum_{j,n}\ell\left(y_{in},\hat{y}_{jn}\left(\lambda\right)\right) &
+s.t. \quad& \sum\lambda_i=1
+\end{aligned}
+\end{equation}
+Here we use the $\ell$-2 regularization term to control the complexity of $\lambda$s so that the target model can achieve better generalization performance. For the loss function $\ell(\cdot,\cdot)$, We use the cross-entropy loss function.
+\begin{equation}\label{eq:ce}
+\begin{aligned}
+\ell\left(y_{in},\hat{y}_{jn}\left(\lambda\right)\right)=&y_{in}\log(P_{jn}) & for \quad&
+P_{jn} =& \frac{e^{\hat{y}_{jn}}}{\sum_{h} e^{\hat{y}_{jh}}}
+\end{aligned}
+\end{equation}
+Cross-entropy pays less attention to a single incorrect prediction which reduces the affect of the outliers in the training data. Moreover, cross-entropy works better for the unlabeled data with our "fake label" strategy. As we mentioned in our "fake label" strategy, we use one-hot strategy to encode the hard labels of the labeled examples while encoding the unlabeled examples with gray code. When we use cross-entropy, it can automatically ignore penalties of the unlabeled examples and reduce the noise introduced by our "fake label" strategy. 
+%Let:
+%\begin{equation}\label{eq:mu}
+%\begin{aligned}
+%\mu_{ijn}=s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}} \qquad
+%\end{aligned}
+%\end{equation}
+The derivative can be written as:
+\begin{equation}\label{eq:p}
+\begin{aligned}
+\frac{\partial \ell(\lambda)}{\partial \lambda_i}&=\sum_n\bigg(s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\bigg)\left(P_{jn}-{y}_{jn}\right)
+\end{aligned}
+\end{equation}
+\begin{algorithm}[t]
+	\caption{GDSDA-SVM}\label{alg:svm}
+	\begin{algorithmic}
+		\REQUIRE Input examples $X=\{\textbf{x}_1,...,\textbf{x}_L\}$, number of classes $N$, number of sources $M$, 3D label matrix, $S=[Y_1,Y_2,...,Y_{M}]$ with size $L\times M \times N$, temperature $T$ %optimization iteration $iter$
+		\ENSURE Target model $f_t = Wx$
+		\STATE Compute $\Omega=[K+\frac{\mathbf{I}}{2C}]$
+		\STATE Compute imitation parameter $\lambda$ with Algorithm \ref{alg:lambda}
+		\STATE Compute new label $Y_{new}=\sum_i\lambda_iY_i$
+		\STATE Compute $\eta = \Omega^{-1}Y_{new}$
+		\STATE Compute $w_n = \sum_j \eta_{jn}x_j$
+	\end{algorithmic}	
+\end{algorithm}
+\begin{algorithm}[t]
+	\caption{$\lambda$ Optimization}\label{alg:lambda}
+\begin{algorithmic}
+	\REQUIRE Input examples $X$, number of classes $N$, size of sources $M$, 3D label matrix $S$, temperature $T$, optimization iteration $iter$, Kernel matrix $\Omega$
+    \ENSURE Imitation parameter $\lambda$
+    \STATE Initialize $\lambda = \frac{1}{M}$, 
+    
+    \STATE Let $S_n$ be the label matrix of $S$ for class $n$
+    \FOR{Each label $S_n$} 
+    \STATE Compute $\eta'_n=\Omega^{-1}S_n$ 
+    \ENDFOR
+%    \STATE Compute $\mu_{ijn}=s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}$
+    \FOR {$it \in \{1,...,iter\}$ }
+	    \STATE Compute $\hat{y}_{jn}$ and $P_{jn}$ with \eqref{eq:yhat}  and \eqref{eq:ce}
+%	    \STATE $\Delta_{\lambda} \leftarrow 0$
+	    \FOR {each $\textbf{x}_j$ in $X$}
+		    \STATE $\Delta_{\lambda} = \Delta_{\lambda}+\sum_n\bigg(s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\bigg)\left(P_{jn}-{y}_{jn}\right)$
+	    \ENDFOR
+	    \STATE $\Delta_{\lambda} =\Delta_{\lambda}/L$, $\lambda = \lambda - \frac{1}{it}(\Delta_{\lambda}+\lambda)$
+	    , $\lambda = \lambda / \sum\lambda_i$
+%	    \STATE 
+    \ENDFOR
+\end{algorithmic}	
+\end{algorithm}
+To summarize, we describe GDSDA-SVM in Algorithm \ref{alg:svm}. As the optimization problem \eqref{eq:loo_loss} is strongly convex, it is easy to prove that Algorithm \ref{alg:lambda} can converge to the optimal $\lambda$ with the rate of $O(\log(t)/t)$ where $t$ is the optimization iteration (We are not able to show our proof here due to the space limit). 
+
+
+
+

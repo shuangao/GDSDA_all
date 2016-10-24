@@ -1,0 +1,9 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: GDSDA_all.aux
+The style file: splncs03.bst
+Database file #1: research.bib
+A bad cross reference---entry "KrizhevskyNIPS12"
+refers to entry "DBLP:conf/nips/2012", which doesn't exist
+Warning--I didn't find a database entry for "DBLP:conf/nips/2012"
+Warning--empty booktitle in duan2012visual
+Warning--can't use both volume and number fields in duan2012visual
+(There was 1 error message)
