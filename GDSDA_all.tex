@@ -33,8 +33,8 @@
 \title{Fast Generalized Distillation for Semi-supervised Domain Adaptation}
 \maketitle
 \begin{abstract}
-	Semi-supervised domain adaptation (SDA) is a typical setting when we face the problem of domain adaptation in the real applications. How to effectively utilize the unlabeled examples is an important issue in SDA. In this paper, we propose a new paradigm, called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA) to solve the SDA problem.
-	We first demonstrate that GDSDA can effectively utilize the unlabeled data to transfer the knowledge from the source domain in the SDA problem. Meanwhile, we illustrate that the imitation parameter of GDSDA can greatly affect the performance of the target model. Then, we propose GDSDA-SVM which uses SVM as the base classifier and can effectively estimate the imitation parameter. Specifically, the imitation parameter is estimated by minimizing the Leave-one-out loss on the target data. Experiment results show that GDSDA-SVM can effectively utilize the unlabeled data to transfer the knowledge between different domains under the SDA setting.
+	Semi-supervised domain adaptation (SDA) is a typical setting when we face the problem of domain adaptation in real applications. How to effectively utilize the unlabeled data is an important issue in SDA. In this paper, we propose a new paradigm, called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA) to solve the SDA problem.
+	We first demonstrate that GDSDA can effectively utilize the unlabeled data to transfer the knowledge from the source models. We illustrate that the imitation parameter of GDSDA can greatly affect the performance of the target model and propose GDSDA-SVM which uses SVMs as the base classifier and can effectively estimate the imitation parameter. Specifically, the imitation parameter is estimated by minimizing the Leave-one-out cross-validation loss on the target data using our novel objective function. Experiment results show that GDSDA-SVM can effectively utilize the unlabeled data to transfer the knowledge between different domains under the SDA setting.
 \end{abstract}
 
 \section{Introduction}
@@ -55,8 +55,7 @@
 \input{exp}
 
 \section{Conclusion}\label{sec:con}
-%In this paper, we propose a framework called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA) that can effectively leverage the knowledge from the source domain for SDA problem. We illustrate the effectiveness of GDSDA. In particular, we demonstrate that the knowledge can be effectively transferred between different domains by distilling the knowledge of the source model using the unlabeled examples. Moreover, we have shown that the performance of the target model can be further improved with the help of just one labeled example from each class. We also address the importance of the imitation parameter in GDSDA. To make GDSDA more effective in real applications, we proposed a method called GDSDA-SVM which uses SVM as the base learner. Experiment results show that GDSDA-SVM can effectively determine the imitation parameter to control the importance of the source knowledge and achieve improved performance. 
-In this paper, we propose a framework called \textit{Generalized Distillation Semi-supervised Domain Adaptation} (GDSDA) that can effectively leverage the knowledge from the source domain for SDA problem. To make GDSDA more effective in real applications, we proposed a method called GDSDA-SVM and show that GDSDA-SVM can effectively determine the imitation parameter for GDSDA.
+In this paper, we propose a framework called {Generalized Distillation Semi-supervised Domain Adaptation} that can effectively leverage the knowledge from the source domain using the unlabeled data of the SDA problem. To make GDSDA more effective in real applications, we proposed a method called GDSDA-SVM and show that GDSDA-SVM can effectively estimate the imitation parameter for GDSDA. Experiment results show that GDSDA-SVM can effectively leverage the knowledge from one or more source models for the real SDA applications.
 
 
 

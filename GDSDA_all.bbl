@@ -17,6 +17,10 @@ Daum{\'e}~III, H., Kumar, A., Saha, A.: Frustratingly easy semi-supervised
   for Natural Language Processing. pp. 53--59. Association for Computational
   Linguistics (2010)
 
+\bibitem{delalleau2005efficient}
+Delalleau, O., Bengio, Y., Le~Roux, N.: Efficient non-parametric function
+  induction in semi-supervised learning. In: AISTATS. vol.~27, p. 100 (2005)
+
 \bibitem{Donahue_2013_CVPR}
 Donahue, J., Hoffman, J., Rodner, E., Saenko, K., Darrell, T.: Semi-supervised
   domain adaptation with instance constraints. In: The IEEE Conference on
@@ -75,11 +79,6 @@ Romero, A., Ballas, N., Kahou, S.E., Chassang, A., Gatta, C., Bengio, Y.:
 Suykens, J.A., Vandewalle, J.: Least squares support vector machine
   classifiers. Neural processing letters  9(3),  293--300 (1999)
 
-\bibitem{tommasi2014learning}
-Tommasi, T., Orabona, F., Caputo, B.: Learning categories from few examples
-  with multi model knowledge transfer. Pattern Analysis and Machine
-  Intelligence, IEEE Transactions on  36(5),  928--941 (2014)
-
 \bibitem{Tzeng_2015_ICCV}
 Tzeng, E., Hoffman, J., Darrell, T., Saenko, K.: Simultaneous deep transfer
   across domains and tasks. In: The IEEE International Conference on Computer
@@ -95,10 +94,6 @@ Urban, G., Geras, K.J., Kahou, S.E., Aslan, O., Wang, S., Caruana, R., rahman
 Vapnik, V., Izmailov, R.: Learning using privileged information: Similarity
   control and knowledge transfer. Journal of Machine Learning Research  16,
   2023--2049 (2015)
-
-\bibitem{vapnik1999overview}
-Vapnik, V.N.: An overview of statistical learning theory. IEEE Transactions on
-  Neural Networks  10(5),  988--999 (1999)
 
 \bibitem{yao2015semi}
 Yao, T., Pan, Y., Ngo, C.W., Li, H., Mei, T.: Semi-supervised domain adaptation
