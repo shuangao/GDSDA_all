@@ -1,47 +1,46 @@
 %As we mentioned above, to achieve the best performance of the target model, the imitation parameter should be set to minimize the training error. 
 In this section, we propose our method GDSDA-SVM that uses SVM as the base classifier and can effectively estimate the imitation parameter.
 \subsection{Distillation with multiple sources}
-As we have mentioned previously, imitation parameter is a hyperparameter in GDSDA. A common method to estimate the hyperparameter is to use the cross-validation.
+As we have mentioned previously, imitation parameter is a hyperparameter in GDSDA. A common method to estimate the hyperparameter is to use cross-validation.
 Here we show that it is possible to obtain a closed form cross-validation error\cite{cawley2006leave} in GDSDA-SVM.
 As a result,  GDSDA-SVM can estimate the imitation parameter effectively with the gradient descent method.
 
-In our GDSDA-SVM, instead of using hinge loss, we use Mean Squared Error (MSE) as our loss function to train the GDSDA-SVM for the following two reasons: (1) Many recently studies \cite{ba2014deep,luo2016face,romero2014fitnets,urban2016deep} show that MSE is an efficient measurement to let the target model distill the knowledge from the source model. (2) MSE can provide a closed form cross-validation error estimation, so we can estimate the imitation parameter more effectively. 
+In our GDSDA-SVM, instead of using hinge loss, we use Mean Squared Error (MSE) as our loss function to train the GDSDA-SVM for the following two reasons: (1) Many recently studies \cite{ba2014deep,luo2016face,romero2014fitnets,urban2016deep} show that MSE is an efficient measurement for the target model to distill the knowledge from the source model. (2) MSE can provide a closed form cross-validation error estimation, so we can estimate the imitation parameter more effectively. 
 
 Suppose we have $L$ examples $\{\textbf{x}_j,\textbf{y}_j\}_{j=1}^L$ from $N$ classes in the target domain where $X\in R^{L\times d}, Y\in R^{L\times N}$. Meanwhile, there are $M-1$ the source (teacher) models providing the soft labels $Y^*=\{\textbf{y}^*_{ij}|j=1,...,L;i=1,...,M-1\}$ for each of the $L$ examples.
-For simplicity, we combine the hard label $Y$ and soft label $Y^*$ and use a new label matrix $S$ to denote them, where:
+For simplicity, we concatenate the hard label $Y$ and soft label $Y^*$ into a new label matrix $S$ to denote them, where:
 \[S=[Y;Y^*]=[Y_1;...;Y_M]; S \in R^{L\times M \times N}\]
 To solve this $N$-class classification problem, we build $N$ binary SVMs.
 To obtain the $n$th binary SVM, we have to solve the following optimization problem: 
 \begin{equation}\label{eq:multi-distill}
 \begin{aligned}
-\min \qquad & \frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{i,j} \lambda_i{e_{ijn}^2} \quad
-s.t. & e_{ijn} = s_{ijn} - \textbf{w}_n\textbf{x}_j;\sum_i\lambda_i=1;\\
+\underset{w_n}{\min} \qquad & \frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{j}{e_{jn}^2} \quad
+s.t. & e_{jn} = \sum_i\lambda_is_{ijn} - \textbf{w}_n\textbf{x}_j%;\sum_i\lambda_i=1;\\
 %& \sum_i\lambda_i=1; \lambda_i \in [0,1]; i\in M;  j\in L\\
 \end{aligned}  
 \end{equation}
-%To solve this optimization problem, we use KKT theorem \cite{cristianini2000introduction} and add the dual sets of variables to the Lagrangian of the optimization problem:
-%\begin{equation}
-%\begin{aligned}
-%\mathcal{L}=&\frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{i,j} \lambda_i{e_{ijn}^2}+\sum_{i,j}\alpha^{(n)}_{ij}\left(s_{ij} - \textbf{w}_n\textbf{x}_j-e_{ij}\right)+\beta^{(n)}\left(\sum_i\lambda_i-1\right)
-%\end{aligned}
-%\end{equation}
+The Lagrangian of above optimization problem:
+\begin{equation}
+\begin{aligned}
+\mathcal{L}=&\frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{j} {e_{jn}^2}+\sum_{j}\eta_{jn}\left(\sum_i\lambda_is_{ijn} - \textbf{w}_n\textbf{x}_j-e_{jn}\right)%+\beta^{(n)}\left(\sum_i\lambda_i-1\right)
+\end{aligned}
+\end{equation}
 To find the saddle point, 
 \begin{equation}
 \begin{aligned}
-\frac{{\partial L}}{{\partial \textbf{w}_n}}& =0 \rightarrow \textbf{w}_n = \sum_{j}\alpha^{(n)}_{ij} {\textbf{x}_j}; &
-\frac{{\partial L}}{{\partial {e_{ijn}}}} & =0 \rightarrow \alpha^{(n)}_{ij} = 2C\lambda_i {e_{ijn}}\\
+\frac{{\partial L}}{{\partial \textbf{w}_n}}& =0 \rightarrow \textbf{w}_n = \sum_{j}\eta_{jn} {\textbf{x}_j}; &
+\frac{{\partial L}}{{\partial {e_{ijn}}}} & =0 \rightarrow \eta_{jn} = 2C\lambda_i {e_{ijn}}\\
 \end{aligned}
 \end{equation}
-For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{ijn}  + \textbf{w}_n\textbf{x}_j= s_{ijn}$. Replacing $\textbf{w}_n$ and $e_{ijn}$,  we have:  
-\begin{equation}
-\begin{aligned}
-%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\frac{\alpha^{(n)}_{ij}}{2C\lambda_i}&=s_{ijn}\\
-\lambda_i\textbf{x}_j\sum_{k}\alpha^{(n)}_{ik}\textbf{x}_k+\frac{\alpha^{(n)}_{ij}}{2C}&=\lambda_is_{ijn}
-%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\sum_j\frac{\alpha^{(n)}_{ij}}{2C}&=\sum_j\lambda_js_{ijn}
-\end{aligned}
-\end{equation}
-Summing over each constraint of example $x_j$ and let 
-$\eta_{jn}=\sum_i\alpha^{(n)}_{ij}$, we have:
+%For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{ijn}  + \textbf{w}_n\textbf{x}_j= s_{ijn}$. Replacing $\textbf{w}_n$ and $e_{ijn}$,  we have:  
+%\begin{equation}
+%\begin{aligned}
+%%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\frac{\alpha^{(n)}_{ij}}{2C\lambda_i}&=s_{ijn}\\
+%\lambda_i\textbf{x}_j\sum_{k}\alpha^{(n)}_{ik}\textbf{x}_k+\frac{\alpha^{(n)}_{ij}}{2C}&=\lambda_is_{ijn}
+%%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\sum_j\frac{\alpha^{(n)}_{ij}}{2C}&=\sum_j\lambda_js_{ijn}
+%\end{aligned}
+%\end{equation}
+For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{jn}  + \textbf{w}_n\textbf{x}_j= \sum_i\lambda_is_{ijn}$. Replacing $\textbf{w}_n$ and $e_{ijn}$,  we have:
 %\begin{equation}
 %\underbrace{\sum_i\lambda_i}_{=1} \textbf{x}_j\sum_{k}\alpha^{(n)}_{ik}\textbf{x}_k+\sum_i\frac{\alpha^{(n)}_{ij}}{2C}=\sum_i\lambda_is_{ijn}
 %\end{equation}
@@ -50,22 +49,19 @@ $\eta_{jn}=\sum_i\alpha^{(n)}_{ij}$, we have:
 %$\eta_{jn}=\sum_i\alpha^{(n)}_{ij}$, we have:
 \begin{equation}
 \begin{aligned}
-\sum_j\eta_{jn}\textbf{x}_jx_i+\frac{\eta_{in}}{2C}&=\sum_i\lambda_is_{ijn}\\
+\textbf{x}_j\sum_k\eta_{kn}\textbf{x}_k+\frac{\eta_{jn}}{2C}&=\sum_i\lambda_is_{ijn}\\
 %M\eta_n&=S_n\begin{bmatrix}
 %\lambda_1\\\vdots\\\lambda_m
 %\end{bmatrix}
 \end{aligned}
 \end{equation}
 
-This indicates that solving the optimization problem \eqref{eq:multi-distill} is equivalent to solving a standard SVM whose the target is the weighted sum of each label $\sum_i\lambda_is_{ijn}$.
-
 Here we use $\Omega$ to denote the matrix $\Omega=[K+\frac{\mathbf{I}}{2C}]$ where $K$ is the linear kernel matrix $K=\{\textbf{x}_i\textbf{x}_j|i,j\in 1\dots L\}$. To simplify our notation, let ${\eta}'_{n}=M^{-1}S_n$ where $S_n$ is the matrix $S_n=\{s_{ijn}|i\in M;j\in L\}$ and $\Omega^{-1}$ is the inverse of matrix $\Omega$. 
 
-Let $\eta_{jn}=\sum_i\lambda_i{\eta}'_{ijn}$.
 According to  \cite{cawley2006leave}, the Leave-one-out estimation of the example $\textbf{x}_j$ for the $n$th binary SVM can be written as:
 %\[\sum_i\lambda_is_{ijn}-\hat{y}_{jn} =\frac{{\eta}_{jn}}{\Omega_{jj}^{-1}} =\frac{\sum_i\lambda_i{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\]
 \begin{equation}\label{eq:yhat}
-\hat{y}_{jn} = \sum_i\lambda_i\left(s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\right)
+\hat{y}_{jn} = \sum_i\lambda_is_{ijn}-\frac{{\eta}_{jn}}{\Omega_{jj}^{-1}}
 \end{equation}
 where $\Omega^{-1}_{jj}$ is the $j$th diagonal element of $\Omega^{-1}$.
 % Now for any given $\lambda$, we have found an efficient way to estimate the LOO of each binary target model for example $\textbf{x}_j$. 
@@ -75,7 +71,7 @@ From the previous part, we have already found a effective way to calculate the l
 \begin{equation}\label{eq:loo_loss}
 \begin{aligned}
 \min \quad& L_c\left(\lambda\right)=\frac{1}{2}\sum_i^M||\lambda_i||^2+\frac{1}{L}\sum_{j,n}\ell\left(y_{in},\hat{y}_{jn}\left(\lambda\right)\right) &
-s.t. \quad& \sum\lambda_i=1
+%s.t. \quad& \sum\lambda_i=1
 \end{aligned}
 \end{equation}
 Here we use the $\ell$-2 regularization term to control the complexity of $\lambda$ so that the target model can achieve better generalization performance even with a small training set. For the loss function $\ell(\cdot,\cdot)$, we use the cross-entropy loss function.
@@ -95,7 +91,7 @@ Typically, cross-entropy pays less attention to a single incorrect prediction wh
 As a result, the derivative of Eq. \eqref{eq:ce} can be calculated as:
 \begin{equation}\label{eq:p}
 \begin{aligned}
-\frac{\partial \ell(\lambda)}{\partial \lambda_i}&=\sum_n\bigg(s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\bigg)\left(P_{jn}-{y}_{jn}\right)
+\frac{\partial \ell(\lambda)}{\partial \lambda}&=\sum_{j,n}s_{ijn}\left(P_{jn}-{y}_{jn}\right)
 \end{aligned}
 \end{equation}
 \begin{algorithm}[t]
@@ -126,10 +122,10 @@ As a result, the derivative of Eq. \eqref{eq:ce} can be calculated as:
 	    \STATE Compute $\hat{y}_{jn}$ and $P_{jn}$ with \eqref{eq:yhat}  and \eqref{eq:ce}
 %	    \STATE $\Delta_{\lambda} \leftarrow 0$
 	    \FOR {each $\textbf{x}_j$ in $X$}
-		    \STATE $\Delta_{\lambda} = \Delta_{\lambda}+\sum_n\bigg(s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\bigg)\left(P_{jn}-{y}_{jn}\right)$
+		    \STATE $\Delta_{\lambda} = \Delta_{\lambda}+\sum_{j,n}s_{ijn}\left(P_{jn}-{y}_{jn}\right)$
 	    \ENDFOR
 	    \STATE $\Delta_{\lambda} =\Delta_{\lambda}/L$, $\lambda = \lambda - \frac{1}{it}(\Delta_{\lambda}+\lambda)$
-	    , $\lambda = \lambda / \sum\lambda_i$
+	    % $\lambda = \lambda / \sum\lambda_i$
 %	    \STATE 
     \ENDFOR
 \end{algorithmic}	
