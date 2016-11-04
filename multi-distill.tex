@@ -1,9 +1,9 @@
 %As we mentioned above, to achieve the best performance of the target model, the imitation parameter should be set to minimize the training error. 
 In this section, we propose our method GDSDA-SVM that uses SVM as the base classifier and can effectively estimate the imitation parameter.
 \subsection{Distillation with multiple sources}
-As we mentioned previously, imitation parameter is a hyperparameter in GDSDA. A common method to estimate the hyperparameter is to use cross-validation.
+As we mentioned previously, the imitation parameter is a hyperparameter in GDSDA. A common method to estimate the hyperparameter is to use cross-validation.
 Here we show that it is possible to obtain the closed form cross-validation error\cite{cawley2006leave} in GDSDA-SVM.
-As a result,  GDSDA-SVM can estimate the imitation parameter effectively with the gradient descent method. Moreover, compared to \cite{duan2009domain} which also exploit the knowledge from the source model and use the Maximum Mean Discrepancy to determine the weights of the source models, our method can determine the imitation parameter directly with the source model which is more effective with the relatively large source domains.
+As a result,  GDSDA-SVM can estimate the imitation parameter effectively with the gradient descent method. Moreover, compared to \cite{duan2009domain} which also exploits the knowledge from the source model and uses the Maximum Mean Discrepancy to determine the weights of the source models, our method can determine the imitation parameter directly with the source model which is more effective with the relatively large source domains.
 
 In our GDSDA-SVM, instead of using hinge loss, we use Mean Squared Error (MSE) as our loss function to train the GDSDA-SVM for the following two reasons: (1) Many recently studies \cite{ba2014deep,luo2016face,romero2014fitnets,urban2016deep} show that MSE is an efficient measurement for the target model to distill the knowledge from the source model. (2) MSE can provide a closed form cross-validation error estimation, so we can estimate the imitation parameter more effectively. 
 
