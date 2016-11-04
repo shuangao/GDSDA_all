@@ -11,10 +11,6 @@ Cawley, G.C.: Leave-one-out cross-validation based model selection criteria for
   weighted ls-svms. In: Neural Networks, 2006. IJCNN'06. International Joint
   Conference on. pp. 1661--1668. IEEE (2006)
 
-\bibitem{cristianini2000introduction}
-Cristianini, N., Shawe-Taylor, J.: An introduction to support vector machines
-  and other kernel-based learning methods. Cambridge university press (2000)
-
 \bibitem{daume2010frustratingly}
 Daum{\'e}~III, H., Kumar, A., Saha, A.: Frustratingly easy semi-supervised
   domain adaptation. In: Proceedings of the 2010 Workshop on Domain Adaptation
@@ -29,6 +25,11 @@ Delalleau, O., Bengio, Y., Le~Roux, N.: Efficient non-parametric function
 Donahue, J., Hoffman, J., Rodner, E., Saenko, K., Darrell, T.: Semi-supervised
   domain adaptation with instance constraints. In: The IEEE Conference on
   Computer Vision and Pattern Recognition (CVPR) (2013)
+
+\bibitem{duan2009domain}
+Duan, L., Tsang, I.W., Xu, D., Chua, T.S.: Domain adaptation from multiple
+  sources via auxiliary classifiers. In: Proceedings of the 26th Annual
+  International Conference on Machine Learning. pp. 289--296. ACM (2009)
 
 \bibitem{duan2012learning}
 Duan, L., Xu, D., Tsang, I.W.: Learning with augmented features for

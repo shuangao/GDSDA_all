@@ -1,17 +1,17 @@
 %As we mentioned above, to achieve the best performance of the target model, the imitation parameter should be set to minimize the training error. 
 In this section, we propose our method GDSDA-SVM that uses SVM as the base classifier and can effectively estimate the imitation parameter.
 \subsection{Distillation with multiple sources}
-As we have mentioned previously, imitation parameter is a hyperparameter in GDSDA. A common method to estimate the hyperparameter is to use cross-validation.
-Here we show that it is possible to obtain a closed form cross-validation error\cite{cawley2006leave} in GDSDA-SVM.
-As a result,  GDSDA-SVM can estimate the imitation parameter effectively with the gradient descent method.
+As we mentioned previously, imitation parameter is a hyperparameter in GDSDA. A common method to estimate the hyperparameter is to use cross-validation.
+Here we show that it is possible to obtain the closed form cross-validation error\cite{cawley2006leave} in GDSDA-SVM.
+As a result,  GDSDA-SVM can estimate the imitation parameter effectively with the gradient descent method. Moreover, compared to \cite{duan2009domain} which also exploit the knowledge from the source model and use the Maximum Mean Discrepancy to determine the weights of the source models, our method can determine the imitation parameter directly with the source model which is more effective with the relatively large source domains.
 
 In our GDSDA-SVM, instead of using hinge loss, we use Mean Squared Error (MSE) as our loss function to train the GDSDA-SVM for the following two reasons: (1) Many recently studies \cite{ba2014deep,luo2016face,romero2014fitnets,urban2016deep} show that MSE is an efficient measurement for the target model to distill the knowledge from the source model. (2) MSE can provide a closed form cross-validation error estimation, so we can estimate the imitation parameter more effectively. 
 
-Suppose we have $L$ examples $\{\textbf{x}_j,\textbf{y}_j\}_{j=1}^L$ from $N$ classes in the target domain where $X\in R^{L\times d}, Y\in R^{L\times N}$. Meanwhile, there are $M-1$ the source (teacher) models providing the soft labels $Y^*=\{\textbf{y}^*_{ij}|j=1,...,L;i=1,...,M-1\}$ for each of the $L$ examples.
-For simplicity, we concatenate the hard label $Y$ and soft label $Y^*$ into a new label matrix $S$ to denote them, where:
-\[S=[Y;Y^*]=[Y_1;...;Y_M]; S \in R^{L\times M \times N}\]
+Suppose we have $L$ examples $\{X,Y\}$ from $N$ classes in the target domain where $X\in R^{L\times d}, Y\in R^{L\times N}$. Meanwhile, there are $M-1$ the source (teacher) models providing the soft labels {$Y^*=\{\textbf{y}^*_{ijn}|i=1,...,M-1;j=1,...,L;n=1,...,N\}$} for each of the $L$ examples.
+For simplicity, we concatenate the hard label $Y$ and soft label $Y^*$ into a new label matrix $S$, where:
+\[S=[Y;Y^*]=[S_1;...;S_M]; S_i \in R^{L \times N}\]
 To solve this $N$-class classification problem, we build $N$ binary SVMs.
-To obtain the $n$th binary SVM, we have to solve the following optimization problem: 
+To learn the $n$th binary SVM, we have to solve the following optimization problem: 
 \begin{equation}\label{eq:multi-distill}
 \begin{aligned}
 \underset{w_n}{\min} \qquad & \frac{1}{2}{|| \textbf{w}_n ||^2} + C\sum_{j}{e_{jn}^2} \quad
@@ -29,7 +29,7 @@ To find the saddle point,
 \begin{equation}
 \begin{aligned}
 \frac{{\partial L}}{{\partial \textbf{w}_n}}& =0 \rightarrow \textbf{w}_n = \sum_{j}\eta_{jn} {\textbf{x}_j}; &
-\frac{{\partial L}}{{\partial {e_{ijn}}}} & =0 \rightarrow \eta_{jn} = 2C\lambda_i {e_{ijn}}\\
+\frac{{\partial L}}{{\partial {e_{jn}}}} & =0 \rightarrow \eta_{jn} = 2C {e_{jn}}\\
 \end{aligned}
 \end{equation}
 %For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{ijn}  + \textbf{w}_n\textbf{x}_j= s_{ijn}$. Replacing $\textbf{w}_n$ and $e_{ijn}$,  we have:  
@@ -40,7 +40,7 @@ To find the saddle point,
 %%x_j\sum_{k}\alpha^{(n)}_{ik}x_k+\sum_j\frac{\alpha^{(n)}_{ij}}{2C}&=\sum_j\lambda_js_{ijn}
 %\end{aligned}
 %\end{equation}
-For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{jn}  + \textbf{w}_n\textbf{x}_j= \sum_i\lambda_is_{ijn}$. Replacing $\textbf{w}_n$ and $e_{ijn}$,  we have:
+For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $e_{jn}  + \textbf{w}_n\textbf{x}_j= \sum_i\lambda_is_{ijn}$. Replacing $\textbf{w}_n$ and $e_{jn}$,  we have:
 %\begin{equation}
 %\underbrace{\sum_i\lambda_i}_{=1} \textbf{x}_j\sum_{k}\alpha^{(n)}_{ik}\textbf{x}_k+\sum_i\frac{\alpha^{(n)}_{ij}}{2C}=\sum_i\lambda_is_{ijn}
 %\end{equation}
@@ -56,42 +56,37 @@ For each example $\textbf{x}_j$ and its constraint of label $s_{ijn}$, we have $
 \end{aligned}
 \end{equation}
 
-Here we use $\Omega$ to denote the matrix $\Omega=[K+\frac{\mathbf{I}}{2C}]$ where $K$ is the linear kernel matrix $K=\{\textbf{x}_i\textbf{x}_j|i,j\in 1\dots L\}$. To simplify our notation, let ${\eta}'_{n}=M^{-1}S_n$ where $S_n$ is the matrix $S_n=\{s_{ijn}|i\in M;j\in L\}$ and $\Omega^{-1}$ is the inverse of matrix $\Omega$. 
-
+Here we use $\Omega$ to denote the matrix $\Omega=[K+\frac{\mathbf{I}}{2C}]$ where $K$ is the linear kernel matrix $K=\{\textbf{x}_i\textbf{x}_j|i,j\in 1\dots L\}$. Let
+% ${\eta}'_{n}=\Omega^{-1}S_n$ where $S_n$ is the matrix $S_n=\{s_{ijn}|i\in M;j\in L\}$ and 
+ $\Omega^{-1}$ be the inverse of matrix $\Omega$ and $\Omega^{-1}_{jj}$ be the $j$th diagonal element of $\Omega^{-1}$. We have $\eta = \sum_i\lambda_i\Omega^{-1}S_i$. For simplification, let $\eta_i' =\Omega^{-1} S_i\in R^{L\times N}$.
 According to  \cite{cawley2006leave}, the Leave-one-out estimation of the example $\textbf{x}_j$ for the $n$th binary SVM can be written as:
 %\[\sum_i\lambda_is_{ijn}-\hat{y}_{jn} =\frac{{\eta}_{jn}}{\Omega_{jj}^{-1}} =\frac{\sum_i\lambda_i{\eta}'_{ijn}}{\Omega_{jj}^{-1}}\]
 \begin{equation}\label{eq:yhat}
-\hat{y}_{jn} = \sum_i\lambda_is_{ijn}-\frac{{\eta}_{jn}}{\Omega_{jj}^{-1}}
+\hat{y}_{jn} = \sum_i\lambda_i\left(s_{ijn}-\frac{{\eta'}_{ijn}}{\Omega_{jj}^{-1}}\right)
 \end{equation}
-where $\Omega^{-1}_{jj}$ is the $j$th diagonal element of $\Omega^{-1}$.
+
 % Now for any given $\lambda$, we have found an efficient way to estimate the LOO of each binary target model for example $\textbf{x}_j$. 
 %In the following part, we will introduce how to find the optimal $\lambda_i$ for each of the source models. 
 \subsection{Cross-entropy loss for imitation parameter estimation}
-From the previous part, we have already found a effective way to calculate the leave-one-out estimation of the target model. The optimal imitation parameters can be found by minimizing the leave-one-out cross-validation error on the target data:
+From the previous part, we have already found an effective way to calculate the leave-one-out estimation of the target model. The optimal imitation parameters can be found by minimizing the leave-one-out cross-validation error on the target data by:
 \begin{equation}\label{eq:loo_loss}
 \begin{aligned}
-\min \quad& L_c\left(\lambda\right)=\frac{1}{2}\sum_i^M||\lambda_i||^2+\frac{1}{L}\sum_{j,n}\ell\left(y_{in},\hat{y}_{jn}\left(\lambda\right)\right) &
-%s.t. \quad& \sum\lambda_i=1
+\underset{\lambda}{\min} \quad& L_c\left(\lambda\right)=\frac{\beta}{2}\sum_i^M||\lambda_i||^2+\frac{1}{L}\sum_{j,n}\ell\left(y_{jn},\hat{y}_{jn}\left(\lambda\right)\right) &
+s.t. \quad& \sum\lambda_i=1
 \end{aligned}
 \end{equation}
-Here we use the $\ell$-2 regularization term to control the complexity of $\lambda$ so that the target model can achieve better generalization performance even with a small training set. For the loss function $\ell(\cdot,\cdot)$, we use the cross-entropy loss function.
+Here, as the estimation is based on the optimization result on the training set,  we use the $\ell$-2 regularization term regularize $\lambda$ so that the target model can achieve good generalization performance even with a small training set. $\beta$ is used to balance the regularizer and loss function. Empirically we found that setting $\beta=1$ can work well in most situations. For the loss function $\ell(\cdot,\cdot)$, we use the cross-entropy loss function.
 \begin{equation}\label{eq:ce}
 \begin{aligned}
-\ell\left(y_{in},\hat{y}_{jn}\left(\lambda\right)\right)=&y_{in}\log(P_{jn}) & for \quad&
+\ell\left(y_{jn},\hat{y}_{jn}\left(\lambda\right)\right)=&-y_{jn}\log(P_{jn}) & for \quad&
 P_{jn} = \frac{e^{\hat{y}_{jn}}}{\sum_{h} e^{\hat{y}_{jh}}}
 \end{aligned}
 \end{equation}
-Typically, cross-entropy pays less attention to a single incorrect prediction which reduces the affect of the outliers of the training data. Moreover, cross-entropy has its own advantage with our "fake label" strategy. As we have mentioned previously, we use gray code to encode the unlabeled examples. When we use cross-entropy loss, it can automatically ignore penalties of the unlabeled examples and reduce the affect of the noise introduced by our "fake label" strategy. 
-%Let:
-%\begin{equation}\label{eq:mu}
-%\begin{aligned}
-%\mu_{ijn}=s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}} \qquad
-%\end{aligned}
-%\end{equation}
-As a result, the derivative of Eq. \eqref{eq:ce} can be calculated as:
+Typically, cross-entropy loss pays less attention to a single incorrect prediction which reduces the affect of the outliers of the training data. Moreover, cross-entropy has its own advantage with our ``fake label" strategy. As we mentioned previously, we use 0s to encode the unlabeled examples. When we use cross-entropy loss, from Eq.\eqref{eq:ce} we can see that the loss of the unlabeled data is always 0. Therefore, cross-entropy loss can automatically ignore the loss of the unlabeled examples and reduce the effect of the noise introduced by our ``fake label" strategy. 
+The derivative of Eq.\eqref{eq:ce} can be calculated as:
 \begin{equation}\label{eq:p}
 \begin{aligned}
-\frac{\partial \ell(\lambda)}{\partial \lambda}&=\sum_{j,n}s_{ijn}\left(P_{jn}-{y}_{jn}\right)
+\frac{\partial \ell(\lambda)}{\partial \lambda}&=\sum_{j,n}\left(s_{ijn}-\frac{{\eta'}_{ijn}}{\Omega_{jj}^{-1}}\right)\left(P_{jn}-{y}_{jn}\right)
 \end{aligned}
 \end{equation}
 \begin{algorithm}[t]
@@ -110,28 +105,28 @@ As a result, the derivative of Eq. \eqref{eq:ce} can be calculated as:
 	\caption{$\lambda$ Optimization}\label{alg:lambda}
 \begin{algorithmic}
 	\REQUIRE Input examples $X$, number of classes $N$, size of sources $M$, 3D label matrix $S$,  optimization iteration $iter$, Kernel matrix $\Omega$
-    \ENSURE Imitation parameter $\lambda$
-    \STATE Initialize $\lambda = \frac{1}{M}$, 
+    \ENSURE Imitation parameter $\lambda=\{\lambda_1,...,\lambda_M\}$
+    \STATE Initialize $\lambda_i = \frac{1}{M}$, 
     
     \STATE Let $S_n$ be the label matrix of $S$ for class $n$
-    \FOR{Each label $S_n$} 
-    \STATE Compute $\eta'_n=\Omega^{-1}S_n$ 
-    \ENDFOR
+%    \FOR{Each label $Y_n$ in S} 
+    \STATE Compute $\eta'_i=\Omega^{-1}S_i$ 
+%    \ENDFOR
 %    \STATE Compute $\mu_{ijn}=s_{ijn}-\frac{{\eta}'_{ijn}}{\Omega_{jj}^{-1}}$
     \FOR {$it \in \{1,...,iter\}$ }
 	    \STATE Compute $\hat{y}_{jn}$ and $P_{jn}$ with \eqref{eq:yhat}  and \eqref{eq:ce}
 %	    \STATE $\Delta_{\lambda} \leftarrow 0$
 	    \FOR {each $\textbf{x}_j$ in $X$}
-		    \STATE $\Delta_{\lambda} = \Delta_{\lambda}+\sum_{j,n}s_{ijn}\left(P_{jn}-{y}_{jn}\right)$
+		    \STATE $\Delta_{\lambda} = \Delta_{\lambda}+\sum_{j,n}\left(s_{ijn}-\frac{{\eta'}_{ijn}}{\Omega_{jj}^{-1}}\right)\left(P_{jn}-{y}_{jn}\right)$
 	    \ENDFOR
-	    \STATE $\Delta_{\lambda} =\Delta_{\lambda}/L$, $\lambda = \lambda - \frac{1}{it}(\Delta_{\lambda}+\lambda)$
-	    % $\lambda = \lambda / \sum\lambda_i$
+	    \STATE $\Delta_{\lambda} =\Delta_{\lambda}/L$, $\lambda = \lambda - \frac{1}{it*\beta }(\Delta_{\lambda}+\beta\lambda)$
+	    ,$\lambda = \lambda / \sum\lambda_i$
 %	    \STATE 
     \ENDFOR
 \end{algorithmic}	
 \end{algorithm}
 
-To summarize, we describe GDSDA-SVM in Algorithm \ref{alg:svm}. As the optimization problem \eqref{eq:loo_loss} is strongly convex, we can prove that Algorithm \ref{alg:lambda} can converge to the optimal $\lambda$ with the rate of $O(\log(t)/t)$ where $t$ is the optimization iteration (We are not able to show our proof here due to the space limit). 
+We describe GDSDA-SVM in Algorithm \ref{alg:svm}. As the optimization problem \eqref{eq:loo_loss} is strongly convex, we can prove that Algorithm \ref{alg:lambda} can converge to the optimal $\lambda$ with the rate of $O(\log(t)/t)$ where $t$ is the optimization iteration (We are not able to show our proof here due to the space limit). 
 
 
 
